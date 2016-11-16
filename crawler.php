@@ -76,7 +76,7 @@ function parseEbookText($txt_url){
 	$found = false;
 	for($i=$start_pos;$i<=$end_pos;$i++){
 		$char = substr($contents,$i,1);
-		if($char=="\n"){
+		if(ctype_cntrl($char)){
 			$line = trim($line);
 			if(strlen($line)>=50){
 				$lines[] = $line;

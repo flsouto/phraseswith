@@ -1,5 +1,4 @@
 <?php
-
 $books = [];
 foreach(scandir(__DIR__.'/books/') as $file){
 	if(substr($file,-4)=='.txt'){
@@ -59,7 +58,7 @@ foreach($books as $file){
 			}
 			if(!file_exists($word_file)){
 				touch($word_file);
-			}			
+			}
 			file_put_contents($word_file, $phrase.'|'.$source.PHP_EOL, FILE_APPEND);
 			$phrases++;
 			if($phrases>=$goal){
@@ -82,8 +81,8 @@ function extractPhrase($content,$pos){
 		if($char==" "&&$char_prev==" "){
 			continue;
 		}
-		if($char=="\n"){
-			if($char_prev=="\n"){
+		if(ctype_cntrl($char)){
+			if(ctype_cntrl($char_prev)){
 				break;
 			}
 			$char = " ";
@@ -105,8 +104,8 @@ function extractPhrase($content,$pos){
 		if($char=='.' && checkShouldBreak($content,$i)){
 			break;
 		}
-		if($char=="\n"){
-			if($char_prev=="\n"){
+		if(ctype_cntrl($char)){
+			if(ctype_cntrl($char_prev)){
 				break;
 			}
 			$char = " ";
@@ -114,8 +113,8 @@ function extractPhrase($content,$pos){
 		$prepend = $char.$prepend;
 	}
 
-	return ltrim($prepend).$append;
-
+	$phrase = ltrim($prepend).$append;
+    return $phrase;
 }
 
 function checkShouldBreak($content, $period_pos){
