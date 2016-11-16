@@ -76,7 +76,7 @@ function parseEbookText($txt_url){
 	$found = false;
 	for($i=$start_pos;$i<=$end_pos;$i++){
 		$char = substr($contents,$i,1);
-		if(ctype_cntrl($char)){
+		if($char=="\n"){
 			$line = trim($line);
 			if(strlen($line)>=50){
 				$lines[] = $line;
@@ -95,7 +95,7 @@ function parseEbookText($txt_url){
 	}
 
 	if(!$found){
-		return false;
+		//return false;
 	}
 
 	$end_pos-=200;
@@ -132,9 +132,9 @@ if(file_exists($urls_file="crawler/{$letter}_urls")){
 
 $attempts = 0;
 $saved = 0;
-
+$i=0;
 while(!empty($urls)){
-
+    $i++;
     if($attempts>3){
         echo 'Too many attempts. Aborting... '.PHP_EOL;
         break;
@@ -144,7 +144,9 @@ while(!empty($urls)){
 
     file_put_contents($urls_file,implode("\n",$urls));
 
-    sleep((60*rand(3,5)) + rand(11,59));
+    if($i>1){
+        sleep((60*rand(3,5)) + rand(11,59));
+    }
 
     try{
         $info = parseEbookInfo($url);
