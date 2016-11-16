@@ -15,6 +15,8 @@ function parseEbooksURLs($letter){
 
 	$links = $crawler->filter('h2:contains("English")');
 
+    $urls = [];
+
 	foreach($links as $link){
 
 		$link = new Crawler($link);
@@ -114,44 +116,66 @@ if(!is_dir($dir="crawler/$letter/")){
 	mkdir($dir);
 }
 
-$urls = parseEbooksURLs($letter);
-
-foreach($urls as $url){
-
-	sleep((60 * rand(3,5)) + rand(11, 59) );
-
-	try{
-		$info = parseEbookInfo($url);
-		$destination = $dir.str_replace(":",",",$info['title']).'.txt';
-		if(file_exists($destination)){
-			continue;
-		}
-
-		if(empty($info['txt_url'])||empty($info['title'])){
-			continue;
-		}
-
-		$contents = parseEbookText($info['txt_url']);
-		if(empty($contents)){
-			continue;
-		}
-
-		touch($destination);
-		file_put_contents($destination,$contents);		
-
-	} catch(Exception $e) {
-
-	}
-
+if(file_exists($urls_file="crawler/{$letter}_urls")){
+    $urls = file($urls_file,FILE_SKIP_EMPTY_LINES);
+    foreach($urls as &$url){
+        $url = trim($url);
+    };unset($url);
+} else {
+    $urls = parseEbooksURLs($letter);
+    if(empty($urls)){
+        die('Not possible to parse URLs.');
+    }
+    touch($urls_file);
+    file_put_contents($urls_file,implode("\n",$urls));
 }
 
+$attempts = 0;
+$saved = 0;
 
+while(!empty($urls)){
 
+    if($attempts>3){
+        echo 'Too many attempts. Aborting... '.PHP_EOL;
+        break;
+    }
 
+    $url = array_shift($urls);
 
+    file_put_contents($urls_file,implode("\n",$urls));
 
+    sleep((60*rand(3,5)) + rand(11,59));
 
+    try{
+        $info = parseEbookInfo($url);
+        $destination = $dir.str_replace(":",",",$info['title']).'.txt';
+        if(file_exists($destination)){
+            continue;
+        }
 
+        if(empty($info['txt_url'])||empty($info['title'])){
+            throw new \Exception("Could not parse ebook info.");
+        }
 
+        sleep(rand(10,20));
 
+        $contents = parseEbookText($info['txt_url']);
 
+        if(empty($contents)){
+            throw new \Exception("Could not parse ebook text.");
+        }
+
+        touch($destination);
+
+        file_put_contents($destination,$contents);
+        $attempts = 0;
+        $saved++;
+
+        echo 'Saved: '.$saved.PHP_EOL;
+
+    } catch(Exception $e) {
+        echo $e->getMessage().PHP_EOL;
+        $attempts++;
+    }
+
+}
