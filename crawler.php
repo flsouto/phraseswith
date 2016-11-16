@@ -59,7 +59,10 @@ function parseEbookText($txt_url){
 	$start_pos = stripos($contents, "start of this project");
 
 	if($start_pos===false){
-		return false;
+        $start_pos = stripos($contents,"start of the project");
+        if($start_pos===false){
+            return false;
+        }
 	}
 
 	$end_pos = stripos($contents, "end of the project gutenberg");
