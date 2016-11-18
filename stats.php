@@ -1,9 +1,9 @@
 <?php
 
 $total_words = 0;
-$total_phrases = 0;
 $total_words_ok = 0;
 $words_ok = [];
+$phrases_hashes = [];
 
 $dir = __DIR__."/words/";
 foreach(scandir($dir) as $word){
@@ -18,17 +18,16 @@ foreach(scandir($dir) as $word){
 		if(!$p){
 			continue;
 		}
-		$cnt_phrases++;
+		$hash = md5($p);
+        $phrases_hashes[$hash] = 1;
+        $cnt_phrases++;
 	}
-	$total_phrases+=$cnt_phrases;
-	if($cnt_phrases>=20){
+	if($cnt_phrases>=10){
 		$total_words_ok++;
 		$words_ok[] = substr($word,0,-4);
 	}
 }
 
 echo "Total words: ".$total_words.PHP_EOL;
-echo "Total phrases: ".$total_phrases.PHP_EOL;
+echo "Total phrases: ".count($phrases_hashes).PHP_EOL;
 echo "Total words ok: ".$total_words_ok.PHP_EOL;
-
-print_r($words_ok);
