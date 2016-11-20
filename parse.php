@@ -1,17 +1,18 @@
 <?php
 $books = [];
-foreach(scandir(__DIR__.'/books/') as $file){
+$dir = __DIR__.'/adelaide/extracted/';
+foreach(scandir($dir) as $file){
 	if(substr($file,-4)=='.txt'){
-		if(!stristr($file,'Abandoned')){
-//			continue;
-		}
-		$books[] = __DIR__.'/books/'.$file;
+		$books[] = $dir.$file;
 	}
 }
 
 $result = [];
 $total = 0;
-foreach($books as $file){
+
+while(!empty($books)){
+
+	$file = array_shift($books);
 	
 	$contents = file_get_contents($file);
 	$contents = preg_replace("/\[Illustration:.*?\]/i","",$contents);
@@ -67,6 +68,8 @@ foreach($books as $file){
 		}
 
 	}
+
+	echo "Remaining: ".count($books).PHP_EOL;
 
 }
 
