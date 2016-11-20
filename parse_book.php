@@ -1,6 +1,8 @@
 <?php
 
-$contents = file_get_contents($argv[1]);
+$file = $argv[1];
+
+$contents = file_get_contents($file);
 $contents = preg_replace("/\[Illustration:.*?\]/i","",$contents);
 
 $source = rtrim(basename($file),'.txt');
