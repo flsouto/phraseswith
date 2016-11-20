@@ -55,34 +55,38 @@ function parseEbooksList($letter){
 
 }
 
-$letter = "N";
-$queue_file = "queues/$letter.json";
-$queue = [];
-
 function saveQueue(){
 	global $queue_file, $queue;
 	file_put_contents($queue_file, json_encode($queue, JSON_PRETTY_PRINT));
 }
 
-if(file_exists($queue_file)){
-	$queue = json_decode(file_get_contents($queue_file),true);
-} else {
-	$queue = parseEbooksList($letter);	
-	saveQueue();
+foreach(range("O","Z") as $letter){
+
+	$queue_file = "queues/$letter.json";
+	$queue = [];
+
+	if(file_exists($queue_file)){
+		$queue = json_decode(file_get_contents($queue_file),true);
+	} else {
+		$queue = parseEbooksList($letter);	
+		saveQueue();
+	}
+
+	while(!empty($queue)){
+
+		$item = array_shift($queue);
+
+		saveQueue();
+
+		$dl_url = str_replace($base_url, "",$item['url']);
+		$dl_url = $base_url."cgi-bin/zip/".$dl_url;
+
+		shell_exec('wget "'.$dl_url.'" -O "downloads/'.$item['name'].'.zip"');
+
+		echo count($queue)." items remaining...".PHP_EOL;
+		sleep(rand(30,60));
+
+	}
+
 }
 
-while(!empty($queue)){
-
-	$item = array_shift($queue);
-
-	saveQueue();
-
-	$dl_url = str_replace($base_url, "",$item['url']);
-	$dl_url = $base_url."cgi-bin/zip/".$dl_url;
-
-	shell_exec('wget "'.$dl_url.'" -O "downloads/'.$item['name'].'.zip"');
-
-	echo count($queue)." items remaining...".PHP_EOL;
-	sleep(rand(30,60));
-
-}
