@@ -18,8 +18,6 @@ while(!empty($books)){
 
 	echo "Remaining: ".count($books).PHP_EOL;
 
-	break;
-
 }
 
 
