@@ -22,7 +22,7 @@ foreach(scandir($dir) as $word){
         $phrases_hashes[$hash] = 1;
         $cnt_phrases++;
 	}
-	if($cnt_phrases>=10){
+	if($cnt_phrases>=20){
 		$total_words_ok++;
 		$words_ok[] = substr($word,0,-4);
 	}

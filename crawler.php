@@ -148,7 +148,7 @@ while(!empty($urls)){
     file_put_contents($urls_file,implode("\n",$urls));
 
     if($i>1){
-        sleep((60*rand(3,5)) + rand(11,59));
+        sleep((60*rand(10,15)) + rand(11,59));
     }
 
     try{
@@ -162,7 +162,7 @@ while(!empty($urls)){
             throw new \Exception("Could not parse ebook info.");
         }
 
-        sleep(rand(10,20));
+        sleep((60*rand(10,15)) + rand(11,59));
 
         $contents = parseEbookText($info['txt_url']);
 
