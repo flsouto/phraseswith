@@ -1,10 +1,9 @@
 <?php
 
 $config = json_decode(file_get_contents(__DIR__.'/config.json'),true);
-
 $corpus_dir = $config['corpus_dir'];
-
 $corpus_files = array_diff(scandir($corpus_dir),['.','..']);
+$skip_targets = file_get_contents('skip.txt');
 
 function findRandomTarget(){
 
@@ -17,6 +16,7 @@ function findRandomTarget(){
 	$target = '';
 
 	while(true){
+
 		$pos = rand(0, strlen($corpus_content)-50);
 
 		$excerpt = substr($corpus_content, $pos, 50);
@@ -36,7 +36,11 @@ function findRandomTarget(){
 			continue;
 		}
 
-		if(file_exists('extracted/'.$target.'.txt')){
+		if(checkTargetExists($target)){
+			continue;
+		}
+
+		if(checkSkipTarget($target)){
 			continue;
 		}
 
@@ -48,7 +52,49 @@ function findRandomTarget(){
 
 }
 
-$target = findRandomTarget();
+function findParsedTarget(){
+	
+	foreach(scandir('extracted') as $file){
+		if($file=='.'||$file=='..'){
+			continue;
+		}
+		$targets = file("extracted/$file");
+		shuffle($targets);
+		foreach($targets as $target){
+			$target = trim($target);
+			$target = ltrim($target,'+-');
+			if(empty($target)){
+				continue;
+			}
+			if(checkTargetExists($target)){
+				continue;
+			}
+			if(checkSkipTarget($target)){
+				continue;
+			}
+			return $target;
+		}
+	}
+
+}
+
+function checkTargetExists($target){
+	return file_exists('extracted/'.$target.'.txt');
+}
+
+function checkSkipTarget($target){
+	global $skip_targets;
+	return strstr($skip_targets,$target);
+}
+
+if($argv[1]=='parsed'){
+	$target = findParsedTarget();
+}
+
+if(empty($target)){
+	$target = findRandomTarget();
+}
+
 $target_file = 'extracted/'.$target.'.txt';
 $all_matches = [];
 
@@ -100,5 +146,9 @@ while(!empty($corpus_files)){
 showStatus();
 
 echo 'finished'.PHP_EOL;
+
+if(empty($all_matches)){
+	file_put_contents('skip.txt',$target.PHP_EOL,FILE_APPEND);
+}
 
 
