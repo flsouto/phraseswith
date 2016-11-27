@@ -6,11 +6,13 @@ $stdin = fopen('php://stdin','r+');
 
 echo PHP_EOL;
 
-$asked = [];
+$asked = array_map('trim',file('queue.txt'));
+$asked = array_flip($asked);
 
 while(true){
 	
-	$target = rand(0,1) ? findRandomTarget() : findParsedTarget();
+	$target = findParsedTarget();
+
 	if(isset($asked[$target])){
 		continue;
 	}
