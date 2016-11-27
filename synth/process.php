@@ -2,7 +2,12 @@
 
 require_once(__DIR__.'/inc.utils.php');
 
-$target = '';
+if(empty($argv[1])){
+	die("Usage: command <TARGET>".PHP_EOL);
+}
+
+$target = $argv[1];
+$target_file = 'extracted/'.$target.'.txt';
 $all_matches = [];
 $corpus_files = getCorpusFiles();
 
@@ -17,19 +22,10 @@ function showStatus(){
 
 }
 
-if($argv[1]=='parsed'){
-	$target = findParsedTarget();
-}
-
-if(empty($target)){
-	$target = findRandomTarget();
-}
-
-$target_file = 'extracted/'.$target.'.txt';
-$last_update = time();
-
 echo PHP_EOL;
 showStatus();
+
+$last_update = time();
 
 while(!empty($corpus_files)){
 	$file = array_shift($corpus_files);
