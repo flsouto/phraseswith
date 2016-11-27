@@ -1,0 +1,11 @@
+adelaide/downloads/
+adelaide/extracted/
+adelaide/queues/
+adelaide/unzipped/
+books/
+composer.lock
+crawler/
+synth/extracted/
+tmp
+vendor/
+words/
