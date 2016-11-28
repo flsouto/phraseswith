@@ -2,6 +2,9 @@
 
 $queue = file('queue.txt');
 
+$processed = 0;
+$start_ts = time();
+
 while(!empty($queue)){
 
 	$target = trim(array_shift($queue));
@@ -13,5 +16,12 @@ while(!empty($queue)){
 	file_put_contents('queue.txt', implode(PHP_EOL,$queue));
 
 	passthru("php process.php '$target'");
+
+	$processed++;
+
+	echo PHP_EOL;
+	echo "Total Processed:".$processed.PHP_EOL;
+	echo "Time Taken:".(time()-$start_ts).PHP_EOL;
+	echo PHP_EOL;
 
 }
