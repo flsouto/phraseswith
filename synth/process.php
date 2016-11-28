@@ -31,7 +31,7 @@ while(!empty($corpus_files)){
 	$file = array_shift($corpus_files);
 	$contents = file_get_contents($file);
 
-	preg_match_all("/$target\s([a-z]+\s[a-z]+)/",$contents,$m);
+	preg_match_all("/$target\s([a-z]+\s[a-z]+)[ ,.]/",$contents,$m);
 	$matches = array_unique($m[1]);
 	foreach($matches as $m){
 		if(!isset($all_matches['+'.$m])){
@@ -40,7 +40,7 @@ while(!empty($corpus_files)){
 		}
 	}
 
-	preg_match_all("/([a-z]+\s[a-z]+)\s$target/",$contents,$m);
+	preg_match_all("/[ ,.]([a-z]+\s[a-z]+)\s$target/",$contents,$m);
 	$matches = array_unique($m[1]);
 	foreach($matches as $m){
 		if(!isset($all_matches['-'.$m])){
